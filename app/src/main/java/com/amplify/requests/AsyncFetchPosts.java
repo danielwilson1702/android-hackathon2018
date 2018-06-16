@@ -15,6 +15,7 @@ import com.amplify.requests.OnTaskCompleted.Result;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AsyncFetchPosts extends AsyncTask<Void, Void, Result> {
@@ -61,7 +62,16 @@ public class AsyncFetchPosts extends AsyncTask<Void, Void, Result> {
     protected Result doInBackground(Void... params) {
         ServerFunctions serverFunctions = new ServerFunctions();
 
-        JSONObject postDetails = serverFunctions.getPosts(mType, mLat, mLong, mMeterRange, mTag);
+        JSONObject postDetails = null;//serverFunctions.getPosts(mType, mLat, mLong, mMeterRange, mTag);
+        mPosts = new ArrayList<>();
+        mPosts.add(new Post("1", "I am a message", 1529174035, 5, "Dan"));
+        mPosts.add(new Post("2", "I am a message 2", 1529174035, 2, "Dan1"));
+        mPosts.add(new Post("3", "I am a message 3", 1529174035, 600, "Dan2"));
+
+        if (mPosts != null) {
+            return Result.SUCCESS;
+        }
+
         if (postDetails != null) {
             if (!postDetails.optBoolean("error")) {
                 JSONArray historyArray = postDetails.optJSONArray("transactions");

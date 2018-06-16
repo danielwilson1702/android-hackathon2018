@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Howl</string>
+    <string name="app_name">howl</string>
     <string name="tab_text_relevant">Hot</string>
     <string name="tab_text_recent">Recent</string>
     <string name="tab_text_paid">Paid</string>

@@ -39,6 +39,10 @@ public class Post implements Serializable {
         return mUpvotes;
     }
 
+    public void setUpvotes(long upvotes) {
+        mUpvotes = upvotes;
+    }
+
     public String getUsername() {
         return mUsername;
     }

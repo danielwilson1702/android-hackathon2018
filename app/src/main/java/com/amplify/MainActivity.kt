@@ -78,6 +78,7 @@ class MainActivity : BaseActivity() {
         navigation.selectedItemId = R.id.navigation_relevant
 
         setSupportActionBar(toolbar)
+        getSupportActionBar()?.setDisplayShowTitleEnabled(false)
     }
 
     override fun onResume() {
@@ -103,9 +104,9 @@ class MainActivity : BaseActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
 
-        if (id == R.id.action_settings) {
-            return true
-        }
+        //if (id == R.id.action_settings) {
+          //  return true
+        //}
 
         return super.onOptionsItemSelected(item)
     }

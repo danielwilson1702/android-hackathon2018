@@ -6,12 +6,15 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.amplify.model.Post
+import com.amplify.model.PostAdapter
+import com.amplify.model.PostClickListener
 import com.amplify.requests.AsyncFetchPosts
 import com.amplify.requests.OnTaskCompleted
 import com.amplify.requests.RequestPosts
@@ -23,7 +26,9 @@ import kotlinx.android.synthetic.main.fragment_hot.view.*
 /**
  * A placeholder fragment containing a simple view.
  */
-class HotFragment : Fragment(), RequestPosts {
+class HotFragment : Fragment(), RequestPosts, PostClickListener {
+
+    lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -38,10 +43,9 @@ class HotFragment : Fragment(), RequestPosts {
                     }
                 }
 
-        val recyclerView = rootView.hot_recycler_view
+        recyclerView = rootView.hot_recycler_view
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        //recyclerView.adapter =
 
         return rootView
     }
@@ -55,6 +59,23 @@ class HotFragment : Fragment(), RequestPosts {
     override fun onPostsSuccess(posts: MutableList<Post>) {
         (activity as BaseActivity).hideUIForLongRunningTask()
         Toast.makeText(context, "Posts retrieved!", Toast.LENGTH_LONG).show()
+
+        recyclerView.adapter = PostAdapter(context, posts, this)
+    }
+
+    override fun onPostClick(view: View?, post: Post?) {
+        Toast.makeText(context, "Post clicked!", Toast.LENGTH_LONG).show()
+
+    }
+
+    override fun onUpvoteClick(view: View?, post: Post?, on: Boolean) {
+        Toast.makeText(context, "Upvote clicked!", Toast.LENGTH_LONG).show()
+
+    }
+
+    override fun onDownvoteClick(view: View?, post: Post?, on: Boolean) {
+        Toast.makeText(context, "Downvote clicked!", Toast.LENGTH_LONG).show()
+
     }
 
     override fun onPostsFailure(result: OnTaskCompleted.Result, errorMessage: String) {
