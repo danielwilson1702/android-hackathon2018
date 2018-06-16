@@ -8,4 +8,8 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="search_hint">Search questions or answers</string>
     <string name="getting_posts_around_you">Getting posts around you</string>
+    <string name="error_generic_no_network">There is no network connection....</string>
+    <string name="cancelled">Task cancelled!</string>
+    <string name="error_generic_request_problem">Some generic problem occurred!</string>
+    <string name="error_generic_problem">Some generic problem occurred</string>
 </resources>

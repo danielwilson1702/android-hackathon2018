@@ -225,7 +225,7 @@ public class JSONParser {
     }
 
     public static JSONObject getJSONFromHttpGet(String url, List<String> params, int tag) {
-        return getJSONFromHttpGet(url, params, null, tag, HTTP_GET_SECURED, false);
+        return getJSONFromHttpGet(url, params, null, tag, HTTP_GET, false);
     }
 
     public static JSONObject getSlowJSONFromHttpGet(String url, List<String> params, int tag) {

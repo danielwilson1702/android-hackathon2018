@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,9 @@ public class ServerFunctions {
     private static final String GET_CUSTOMER_OVERVIEW = NEW_URL() + "analytics/historyOverview";
     private static final String POST_CUSTOMERS_BY_NAME = NEW_URL() + "analytics/customersByFilters";
     private static final String PUT_SETTINGS = NEW_URL() + "business/details";
+
+
+    private static final String GET_POSTS = NEW_URL() + "threads?";
 
     private static String NEW_URL() {
         return "https://dev.loylap.com/api/v1/";
@@ -290,6 +294,31 @@ public class ServerFunctions {
         params.add("true");
 
         return JSONParser.getSlowJSONFromHttpGet(GET_CUSTOMER_HISTORY, params, tag);
+    }
+
+    public JSONObject getPosts(String type, double lat, double lng, int range, int tag) {
+        Map<String, String> params = new HashMap<>();
+
+        params.put("type", type);
+        params.put("lat", String.valueOf(lat));
+        params.put("long", String.valueOf(lng));
+        params.put("range", String.valueOf(range));
+
+        String url = GET_POSTS;
+        Iterator it = params.entrySet().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            if(pair != null && pair.getKey() != null && pair.getValue() != null) {
+                String key = pair.getKey().toString();
+                String value = pair.getValue().toString();
+
+                url += (key + "=" + value + "&");
+            }
+            it.remove();
+        }
+
+        return JSONParser.getJSONFromHttpGet(url, null, tag);
     }
 
     public JSONObject getMerchantHistory(String branchID, int index, int offset, long startDate, long endDate, int tag) {

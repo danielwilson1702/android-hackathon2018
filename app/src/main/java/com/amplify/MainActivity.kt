@@ -78,16 +78,6 @@ class MainActivity : BaseActivity() {
         navigation.selectedItemId = R.id.navigation_relevant
 
         setSupportActionBar(toolbar)
-
-        RxPermissions(this).requestEach(Manifest.permission.ACCESS_FINE_LOCATION)
-                .subscribe { permission ->
-                    when {
-                        permission.granted -> subscribeToLocation()
-                        permission.shouldShowRequestPermissionRationale -> Toast.makeText(this, "Denied permission without ask never again", Toast.LENGTH_LONG).show()
-                        else -> Toast.makeText(this, "Denied permission with ask never again", Toast.LENGTH_LONG).show()
-                    }
-                }
-
     }
 
     override fun onResume() {
@@ -119,22 +109,5 @@ class MainActivity : BaseActivity() {
 
         return super.onOptionsItemSelected(item)
     }
-
-    private fun subscribeToLocation() {
-        //LocationLiveData is instantiated here because it relies on the Android SDK
-        LocationLiveData(this).observe(this, Observer {
-            Log.d("Main Activity", "location found!!!! $it")
-            it?.let {
-                //Fetch the list of posts now based on current fragment (umm actually the fragment should be doing this)
-
-                showUIForLongRunningTask(true, R.string.getting_posts_around_you)
-                Handler().postDelayed({
-                    hideUIForLongRunningTask()
-                    Toast.makeText(this, "Task complete after 5 seconds", Toast.LENGTH_LONG).show()
-                }, 5000)
-            }
-        })
-    }
-
 
 }
