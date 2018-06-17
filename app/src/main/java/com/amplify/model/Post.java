@@ -15,16 +15,17 @@ public class Post implements Serializable {
     private String mDateString;
     private long mUpvotes;
     private String mUsername;
+    private String mPrice;
 
-    public Post(String id, String message, long date, long upvotes, String username) {
+    public Post(String id, String message, long date, String dateString, long upvotes, String username, String price) {
         mID = id;
         mMessage = message;
         mDate = date;
-        mDateString = DateUtils.formatDateTime(App.getInstance(), mDate,
-                DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE);
+        mDateString = dateString;
 
         mUpvotes = upvotes;
         mUsername = username;
+        mPrice = price;
     }
 
     public String getMessage() {
@@ -45,5 +46,9 @@ public class Post implements Serializable {
 
     public String getUsername() {
         return mUsername;
+    }
+
+    public String getPrice() {
+        return mPrice;
     }
 }

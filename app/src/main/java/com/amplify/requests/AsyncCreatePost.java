@@ -18,28 +18,20 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AsyncFetchPosts extends AsyncTask<Void, Void, Result> {
+public class AsyncCreatePost extends AsyncTask<Void, Void, Result> {
 
     private Context mContext;
-    private RequestPosts mRequest;
-    private String mType;
-    private double mLat;
-    private double mLong;
-    private int mMeterRange;
+    private RequestCreate mRequest;
+    private String mMessage;
 
-    private List<Post> mPosts;
     private String mErrorMessage;
     private int mTag;
+    private List<Post> mPosts;
 
-    public AsyncFetchPosts(Context context, RequestPosts request, String type,
-                           double lat, double lng, int meterRange) {
+    public AsyncCreatePost(Context context, RequestCreate request, String message) {
         mContext = context;
         mRequest = request;
-
-        mType = type;
-        mLat = lat;
-        mLong = lng;
-        mMeterRange = meterRange;
+        mMessage = message;
 
         execute();
     }
@@ -50,7 +42,7 @@ public class AsyncFetchPosts extends AsyncTask<Void, Void, Result> {
             if (!NetworkReceiver.getInstance().isOnline()) {
                 cancel(true);
                 mErrorMessage = App.getInstance().getString(R.string.error_generic_no_network);
-                mRequest.onPostsFailure(Result.NO_CLIENT_CONNECTION, mErrorMessage);
+                mRequest.onCreateFailure(Result.NO_CLIENT_CONNECTION, mErrorMessage);
             }
             mContext = null;
         } else {
@@ -62,7 +54,7 @@ public class AsyncFetchPosts extends AsyncTask<Void, Void, Result> {
     protected Result doInBackground(Void... params) {
         ServerFunctions serverFunctions = new ServerFunctions();
 
-        JSONObject postDetails = serverFunctions.getPosts(mType, mLat, mLong, mMeterRange, mTag);
+        JSONObject postDetails = serverFunctions.createPost(mMessage, mTag);
         mPosts = new ArrayList<>();
 
         JSONArray posts = postDetails.optJSONArray("data");
@@ -74,7 +66,8 @@ public class AsyncFetchPosts extends AsyncTask<Void, Void, Result> {
                 String price = post.optString("price");
 
                 JSONObject votes = post.optJSONObject("votes");
-                String voteTotal = votes.optString("total");
+                String voteTotal = "0";
+                if(votes != null) voteTotal = votes.optString("total");
                 String userName = post.optString("author");
 
                 JSONObject dateObject = post.optJSONObject("date");
@@ -84,9 +77,6 @@ public class AsyncFetchPosts extends AsyncTask<Void, Void, Result> {
                 mPosts.add(new Post(id, message, Long.valueOf(timeStamp), niceDate, Long.valueOf(voteTotal), userName, price));
             }
         }
-        //mPosts.add(new Post("1", "I am a message", 1529174035, 5, "Dan"));
-        //mPosts.add(new Post("2", "I am a message 2", 1529174035, 2, "Dan1"));
-        //mPosts.add(new Post("3", "I am a message 3", 1529174035, 600, "Dan2"));
 
         if (mPosts != null) {
             return Result.SUCCESS;
@@ -113,9 +103,9 @@ public class AsyncFetchPosts extends AsyncTask<Void, Void, Result> {
     protected void onPostExecute(Result result) {
         if (mRequest != null) {
             if(result == Result.SUCCESS)
-                mRequest.onPostsSuccess(mPosts);
+                mRequest.onCreateSuccess(mPosts);
             else
-                mRequest.onPostsFailure(result, mErrorMessage);
+                mRequest.onCreateFailure(result, mErrorMessage);
         }
     }
 
@@ -123,7 +113,7 @@ public class AsyncFetchPosts extends AsyncTask<Void, Void, Result> {
     protected void onCancelled() {
         JSONParser.cancelCallByTag(mTag);
         mErrorMessage = App.getInstance().getString(R.string.cancelled);
-        mRequest.onPostsFailure(Result.CANCELLED, mErrorMessage);
+        mRequest.onCreateFailure(Result.CANCELLED, mErrorMessage);
     }
 
 }

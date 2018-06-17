@@ -11,13 +11,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import com.amplify.model.Post
 import com.amplify.model.PostAdapter
 import com.amplify.model.PostClickListener
-import com.amplify.requests.AsyncFetchPosts
-import com.amplify.requests.OnTaskCompleted
-import com.amplify.requests.RequestPosts
+import com.amplify.requests.*
 import com.amplify.utils.location.LocationLiveData
 import com.sp.loylap.activities.BaseActivity
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -26,7 +25,7 @@ import kotlinx.android.synthetic.main.fragment_hot.view.*
 /**
  * A placeholder fragment containing a simple view.
  */
-class HotFragment : Fragment(), RequestPosts, PostClickListener {
+class HotFragment : Fragment(), RequestPosts, PostClickListener, RequestCreate {
 
     lateinit var recyclerView: RecyclerView
 
@@ -47,6 +46,11 @@ class HotFragment : Fragment(), RequestPosts, PostClickListener {
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
+        rootView.hot_swipe_container.setOnRefreshListener {
+            rootView.hot_swipe_container.isRefreshing = false
+            attemptHotFetch()
+        }
+
         return rootView
     }
 
@@ -64,8 +68,13 @@ class HotFragment : Fragment(), RequestPosts, PostClickListener {
     }
 
     override fun onPostClick(view: View?, post: Post?) {
-        Toast.makeText(context, "Post clicked!", Toast.LENGTH_LONG).show()
+        //Toast.makeText(context, "Post clicked!", Toast.LENGTH_LONG).show()
 
+        val paymentsScreen = activity?.findViewById<ImageView>(R.id.expanded_payments_screen)
+        paymentsScreen?.visibility = View.VISIBLE
+        paymentsScreen?.setOnClickListener {
+            paymentsScreen?.visibility = View.INVISIBLE
+        }
     }
 
     override fun onUpvoteClick(view: View?, post: Post?, on: Boolean) {
@@ -82,6 +91,22 @@ class HotFragment : Fragment(), RequestPosts, PostClickListener {
         (activity as BaseActivity).hideUIForLongRunningTask()
         Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
     }
+
+    override fun onCreateClick(message: String?) {
+        Toast.makeText(context, "Creating post....", Toast.LENGTH_LONG).show()
+        (activity as BaseActivity).showUIForLongRunningTask(true, R.string.creating_post)
+        AsyncCreatePost(context, this, message)
+    }
+
+    override fun onCreateSuccess(posts: MutableList<Post>?) {
+        (activity as BaseActivity).hideUIForLongRunningTask()
+        recyclerView.adapter = PostAdapter(context, posts, this)
+    }
+
+    override fun onCreateFailure(result: OnTaskCompleted.Result?, errorMessage: String?) {
+        Toast.makeText(context, "Something went wrong making that post..", Toast.LENGTH_LONG).show()
+    }
+
 
     private fun subscribeToLocation() {
         //LocationLiveData is instantiated here because it relies on the Android SDK

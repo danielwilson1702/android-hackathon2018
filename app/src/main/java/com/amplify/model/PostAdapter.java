@@ -3,11 +3,13 @@ package com.amplify.model;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -75,8 +77,22 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     myVh.time.setText(current.getDateString());
                 if (myVh.message != null)
                     myVh.message.setText(current.getMessage());
-                if (myVh.upvotes != null)
-                    myVh.upvotes.setText(String.valueOf(current.getUpvotes()));
+                if (myVh.upvotes != null) {
+                    if(TextUtils.isEmpty(current.getPrice())) {
+                        myVh.upvotes.setText(String.valueOf(current.getUpvotes()));
+                        myVh.upvotes.setTextColor(mContext.getColor(R.color.colorAccent));
+                        myVh.upvotes.setBackgroundColor(mContext.getColor(android.R.color.white));
+                        myVh.upvote.setVisibility(View.VISIBLE);
+                        myVh.downvote.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        myVh.upvotes.setText(String.valueOf(current.getPrice()));
+                        myVh.upvotes.setTextColor(mContext.getColor(android.R.color.white));
+                        myVh.upvotes.setBackgroundColor(mContext.getColor(R.color.green));
+                        myVh.upvote.setVisibility(View.GONE);
+                        myVh.downvote.setVisibility(View.GONE);
+                    }
+                }
             }
         }
         else{
@@ -128,21 +144,22 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             else if(v.getId() == R.id.item_post_upvote) {
                 v.setSelected(!v.isSelected());
 
-                if(v.isSelected()){
+                /*if(v.isSelected()){
                     long upvotes = clickedItem.getUpvotes() + 1;
                     clickedItem.setUpvotes(upvotes);
                     notifyDataSetChanged();
-                }
+                }*/
                 mListener.onUpvoteClick(v, clickedItem, v.isSelected());
             }
             else if(v.getId() == R.id.item_post_downvote){
                 v.setSelected(!v.isSelected());
-                mListener.onDownvoteClick(v, clickedItem, v.isSelected());
-                if(v.isSelected()){
+
+                /*if(v.isSelected()){
                     long downVotes = clickedItem.getUpvotes() - 1;
                     clickedItem.setUpvotes(downVotes);
                     notifyDataSetChanged();
-                }
+                }*/
+                mListener.onDownvoteClick(v, clickedItem, v.isSelected());
             }
         }
     }
@@ -150,12 +167,20 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     class HeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         Button createPost;
         Spinner selectDistance;
+        EditText postEditText;
 
         public HeaderViewHolder(View itemView, PostClickListener listener) {
             super(itemView);
             mListener = listener;
-            //createPost = (Button) itemView.findViewById(R.id.item_post_header_create);
+            createPost = (Button) itemView.findViewById(R.id.item_post_header_post_button);
+            createPost.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+                    mListener.onCreateClick(postEditText.getText().toString());
+                }
+            });
             selectDistance = itemView.findViewById(R.id.item_post_header_spinner);
+            postEditText = itemView.findViewById(R.id.item_post_header_post_et);
         }
 
         @Override

@@ -14,8 +14,11 @@ import android.os.Handler
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.*
 import android.util.Log
+import android.view.View
+import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.Toast
+import com.amplify.helper.AnimationHelper
 import com.amplify.utils.location.LocationLiveData
 import com.sp.loylap.activities.BaseActivity
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -107,6 +110,12 @@ class MainActivity : BaseActivity() {
         //if (id == R.id.action_settings) {
           //  return true
         //}
+
+        if(id == R.id.notifications){
+            val mFaqsImageBackground = findViewById<View>(R.id.expanded_faq_image_background);
+            AnimationHelper().zoomImageFromThumb(this, findViewById<View>(R.id.faq_thumb), mFaqsImageBackground,
+                    R.drawable.notification_preview, R.id.expanded_faq_image, R.id.content_container)
+        }
 
         return super.onOptionsItemSelected(item)
     }

@@ -9,9 +9,10 @@ import java.util.Map;
 public class ServerFunctions {
 
     private static final String GET_POSTS = NEW_URL() + "threads?";
+    private static final String POST_POSTS = NEW_URL() + "threads";
 
     private static String NEW_URL() {
-        return "https://dev.loylap.com/api/v1/";
+        return "https://howlapi.infestus.cc/api/";
     }
 
     public JSONObject getPosts(String type, double lat, double lng, int range, int tag) {
@@ -37,6 +38,17 @@ public class ServerFunctions {
         }
 
         return JSONParser.getJSONFromHttpGet(url, null, tag);
+    }
+
+    public JSONObject createPost(String message, int tag) {
+        Map<String, String> params = new HashMap<>();
+
+        params.put("content", message);
+        params.put("timer", String.valueOf(60));
+        params.put("price", String.valueOf(30.15));
+
+        String url = POST_POSTS;
+        return JSONParser.getJSONFromHttpPost(url, params, tag, JSONParser.HTTP_POST);
     }
 }
 

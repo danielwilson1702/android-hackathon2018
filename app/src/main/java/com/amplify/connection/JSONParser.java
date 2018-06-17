@@ -32,6 +32,7 @@ import static android.text.TextUtils.isEmpty;
 
 public class JSONParser {
     public static final int HTTP_GET = 5;
+    public static final int HTTP_POST = 6;
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     final static OkHttpClient client = new OkHttpClient();
     private static final String TAG = "JSONParser";
@@ -99,6 +100,67 @@ public class JSONParser {
         return null;
     }
 
+    public static JSONObject getJSONFromHttpPost(String url, @Nullable Map<String, String> params, int tag, @RequestTypeDef int requestType) {
+        FormBody.Builder formBody = new FormBody.Builder();
+        if (params != null) {
+            Iterator it = params.entrySet().iterator();
+
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                if(pair != null && pair.getKey() != null && pair.getValue() != null) {
+                    String key = pair.getKey().toString();
+                    String value = pair.getValue().toString();
+                    if(!isEmpty(key) && !isEmpty(value))
+                        formBody.add(key, value);
+                }
+                it.remove();
+            }
+        }
+
+        Request request = null;
+        RequestBody body;
+        switch (requestType) {
+            case HTTP_POST:
+                body = formBody.build();
+                request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .tag(tag)
+                        .build();
+                break;
+        }
+
+        Response response = null;
+        try {
+            if (request != null && request.url() != null)
+                Log.w(TAG, "Calling " + request.url().toString());
+            Call call = client.newCall(request);
+            response = call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (response == null) {
+            Log.w(TAG, "The response was null!");
+            return null;
+        } else if (!response.isSuccessful()) {
+            Log.w(TAG, "The response was not successful!");
+        }
+
+        try {
+            JSONObject responseBody = null;
+            if (response.body() != null) {
+                responseBody = new JSONObject(response.body().string());
+            }
+            Log.w(TAG, "Returning response body: " + responseBody);
+            return responseBody;
+        } catch (JSONException | IOException e) {
+            Log.w(TAG, "Exception parsing response to JSON");
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public static List<String> getListFromJSONArray(JSONArray array) {
         List<String> list = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
@@ -109,7 +171,8 @@ public class JSONParser {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
-            HTTP_GET
+            HTTP_GET,
+            HTTP_POST
     })
     public @interface RequestTypeDef {
     }

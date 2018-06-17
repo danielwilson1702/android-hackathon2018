@@ -73,6 +73,7 @@
                 android:hint="How can they help?">
 
                 <EditText
+                    android:id="@+id/item_post_header_post_et"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/edit_text_background"
@@ -82,6 +83,25 @@
                     android:minHeight="56dp" />
 
             </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:padding="4dp"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="31dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/time"/>
+
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/money"/>
+            </LinearLayout>
 
             <Button
                 android:id="@+id/item_post_header_post_button"
